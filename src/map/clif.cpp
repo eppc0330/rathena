@@ -6445,7 +6445,7 @@ void clif_efst_status_change_sub(struct block_list *tbl, struct block_list *bl, 
 			return;
 	}
 
-	for (unsigned char /*//PC rathena icon*/i = 0; i < sc_display_count; i++) {
+	for (unsigned char i = 0; i < sc_display_count; i++) {
 		enum sc_type type = sc_display[i]->type;
 		struct status_change *sc = status_get_sc(bl);
 		const TimerData *td_total = (sc && sc->data[type] ? get_timer((int)(sc->data[type]->tick_total)) : nullptr);
