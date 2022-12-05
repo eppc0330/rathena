@@ -12878,9 +12878,6 @@ int status_change_start_sub(struct block_list* src, struct block_list* bl,enum s
 }
 
 int status_change_start(struct block_list* src, struct block_list* bl, enum sc_type type, int rate, int val1, int val2, int val3, int val4, t_tick tick, unsigned char flag, int32 delay) {
-	if (status_db.find(type)->flag[SCF_NOTICKSAVE]) { //PC official accountbuff
-		val4 = static_cast<int>(time(NULL));
-	}
 	return status_change_start_sub(src, bl, type, rate, val1, val2, val3, val4, 0, tick, 0, flag);
 }
 
