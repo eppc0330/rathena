@@ -6407,7 +6407,7 @@ void clif_status_change_sub(struct block_list *bl, int id, int type, int flag, t
  * @param val2
  * @param val3
  */
-void clif_status_change(struct block_list *bl, int type, int flag, t_tick tick, int val1, int val2, int val3) {
+void clif_status_change(struct block_list *bl, int type, int flag, t_tick tick_total, int val1, int val2, int val3) {
 	clif_status_change_sub(bl, bl->id, type, flag, tick_total, tick_total, val1, val2, val3);
 }
 
