@@ -12724,7 +12724,7 @@ int status_change_start_sub(struct block_list* src, struct block_list* bl,enum s
 	t_tick totaltick, subtick, subticktime = (intptr_t)nullptr;
 	bool tick_interval = false;
 
-	if (tick_time)
+	if (tick_time && tick >= 0)
 		tick += 1;
 
 	if(duration_total > INT_MAX)
