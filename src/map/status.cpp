@@ -12936,10 +12936,7 @@ int status_change_clear(struct block_list* bl, int type)
 	for (const auto &it : status_db) {
 		sc_type status = static_cast<sc_type>(it.first);
 
-		if (status <= SC_NONE || status >= SC_MAX)
-			continue;
-
-		if (!sc->data[status])
+		if (!sc->getSCE(status))
 			continue;
 		if (type == 0) { // Type 0: PC killed
 			if (it.second->flag[SCF_NOREMOVEONDEAD]) {
@@ -12959,13 +12956,9 @@ int status_change_clear(struct block_list* bl, int type)
 		status_change_end(bl, status);
 		if( type == 1 && sc->data[status] ) { // If for some reason status_change_end decides to still keep the status when quitting. [Skotlex]
 			(sc->count)--;
-			if (sc->data[status]->tick_timer > 0) {
-				delete_timer(sc->data[status]->tick_timer, status_change_tick_timer);
-			}
-			if (sc->data[status]->timer != INVALID_TIMER)
-				delete_timer(sc->data[status]->timer, status_change_timer);
-			ers_free(sc_data_ers, sc->data[status]);
-			sc->data[status] = NULL;
+			if (sc->getSCE(status)->timer != INVALID_TIMER)
+				delete_timer(sc->getSCE(status)->timer, status_change_timer);
+			sc->deleteSCE(status);
 		}
 	}
 
