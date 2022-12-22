@@ -6402,32 +6402,8 @@ void clif_status_change_sub(struct block_list *bl, int id, int type, int flag, t
  * @param val2
  * @param val3
  */
-void clif_status_change(struct block_list *bl, int type, int flag, t_tick tick, int val1, int val2, int val3) {
-	map_session_data *sd = NULL;
-
-	if (type == EFST_BLANK)  //It shows nothing on the client...
-		return;
-
-	if (type == EFST_POSTDELAY && tick == 0)
-		return;
-
-	if (type == EFST_ILLUSION && !battle_config.display_hallucination) // Disable Hallucination.
-		return;
-
-#if !( PACKETVER_MAIN_NUM >= 20191120 || PACKETVER_RE_NUM >= 20191106 )
-	// Older clients display normal riding icon.
-	if (type == EFST_MADOGEAR)
-		type = EFST_RIDING;
-#endif
-
-	nullpo_retv(bl);
-
-	sd = BL_CAST(BL_PC, bl);
-
-	if (!(status_efst_get_bl_type((efst_type)type)&bl->type)) // only send status changes that actually matter to the client
-		return;
-
-	clif_status_change_sub(bl, bl->id, type, flag, tick, val1, val2, val3, ((sd ? (pc_isinvisible(sd) ? SELF : AREA) : AREA_WOS)));
+void clif_status_change(struct block_list *bl, int type, int flag, t_tick tick_total, int val1, int val2, int val3) {
+	clif_status_change_sub(bl, bl->id, type, flag, tick_total, tick_total, val1, val2, val3);
 }
 
 /**
