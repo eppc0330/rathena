@@ -12760,10 +12760,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 	}
 
 	// Don't trust the previous sce assignment, in case the SC ended somewhere between there and here.
-	if((sce=sc->data[type])) { // reuse old sc
-		if (tick_interval && sce->tick_timer > 0) {
-			delete_timer(sce->tick_timer, status_change_tick_timer);
-		}
+	if((sce=sc->getSCE(type))) { // reuse old sc
 		if( sce->timer != INVALID_TIMER )
 			delete_timer(sce->timer, status_change_timer);
 		sc_isnew = false;
