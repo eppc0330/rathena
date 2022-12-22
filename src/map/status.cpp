@@ -9858,7 +9858,7 @@ void status_display_remove(struct block_list *bl, enum sc_type type) {
  * @param delay: Delay in milliseconds before the SC is applied
  * @return adjusted duration based on flag values
  */
-int status_change_start(struct block_list* src, struct block_list* bl,enum sc_type type,int rate,int val1,int val2,int val3,int val4,t_tick duration,unsigned char flag, int32 delay) {
+int status_change_start_sub(struct block_list* src, struct block_list* bl,enum sc_type type,int rate,int val1,int val2,int val3,int val4,t_tick duration,t_tick duration_total,t_tick duration_tick,unsigned char flag, int32 delay) {
 	map_session_data *sd = NULL;
 	status_change* sc;
 	struct status_change_entry* sce;
@@ -11499,6 +11499,7 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 			else
 				val4 |= battle_config.monster_cloak_check_type&7;
 			tick_time = 1000; // [GodLesZ] tick time
+			tick = INFINITE_TICK;
 			break;
 		case SC_HALLUCINATIONWALK:
 		case SC_NPC_HALLUCINATIONWALK:
@@ -12798,6 +12799,9 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 
 	// Don't trust the previous sce assignment, in case the SC ended somewhere between there and here.
 	if((sce=sc->getSCE(type))) { // reuse old sc
+		if (tick_interval && sce->tick_timer > 0) {
+			delete_timer(sce->tick_timer, status_change_tick_timer);
+		}
 		if( sce->timer != INVALID_TIMER )
 			delete_timer(sce->timer, status_change_timer);
 		sc_isnew = false;
@@ -12973,6 +12977,9 @@ int status_change_clear(struct block_list* bl, int type)
 	for (const auto &it : status_db) {
 		sc_type status = static_cast<sc_type>(it.first);
 
+		if (status <= SC_NONE || status >= SC_MAX) //PC official tick timer
+			continue;
+
 		if (!sc->getSCE(status))
 			continue;
 		if (type == 0) { // Type 0: PC killed
@@ -12993,6 +13000,9 @@ int status_change_clear(struct block_list* bl, int type)
 		status_change_end(bl, status);
 		if( type == 1 && sc->getSCE(status) ) { // If for some reason status_change_end decides to still keep the status when quitting. [Skotlex]
 			(sc->count)--;
+			if (sc->getSCE(status)->tick_timer > 0) {
+				delete_timer(sc->getSCE(status)->tick_timer, status_change_tick_timer);
+			}
 			if (sc->getSCE(status)->timer != INVALID_TIMER)
 				delete_timer(sc->getSCE(status)->timer, status_change_timer);
 			sc->deleteSCE(status);
@@ -13728,15 +13738,6 @@ TIMER_FUNC(status_change_timer){
 	std::function<void (t_tick)> sc_timer_next = [&sce, &bl, &data](t_tick t) {
 		sce->timer = add_timer(t, status_change_timer, bl->id, data);
 	};
-	
-	// If status has an interval and there is at least 100ms remaining time, wait for next interval
-	if(interval > 0 && sc->data[type] && sce->val4 >= 100) {
-		sc_timer_next(min(sce->val4,interval)+tick);
-		sce->val4 -= interval;
-		if (dounlock)
-			map_freeblock_unlock();
-		return 0;
-	}
 
 	if (dounlock)
 		map_freeblock_unlock();
@@ -13778,7 +13779,7 @@ TIMER_FUNC(status_change_tick_timer) {
 	sd = BL_CAST(BL_PC, bl);
 
 	std::function<void(t_tick)> sc_timer_next = [&sce, &bl, &data](t_tick t) {
-		if(get_timer(sce->timer)->tick >= t)
+		if(sce->timer == INVALID_TIMER || get_timer(sce->timer)->tick >= t)
 			sce->tick_timer = add_timer(t, status_change_tick_timer, bl->id, data);
 	};
 
@@ -14789,7 +14790,7 @@ TIMER_FUNC(status_change_tick_timer) {
 	if (dounlock)
 		map_freeblock_unlock();
 
-	return 0;
+	return status_change_end(bl, type);
 }
 
 /**
