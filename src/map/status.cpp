@@ -9820,9 +9820,9 @@ void status_display_remove(struct block_list *bl, enum sc_type type) {
  * @param delay: Delay in milliseconds before the SC is applied
  * @return adjusted duration based on flag values
  */
-int status_change_start_sub(struct block_list* src, struct block_list* bl,enum sc_type type,int rate,int val1,int val2,int val3,int val4,t_tick duration,t_tick duration_total,t_tick duration_tick,unsigned char flag, int32 delay) {
-	struct map_session_data *sd = NULL;
-	struct status_change* sc;
+int status_change_start(struct block_list* src, struct block_list* bl,enum sc_type type,int rate,int val1,int val2,int val3,int val4,t_tick duration,unsigned char flag, int32 delay) {
+	map_session_data *sd = NULL;
+	status_change* sc;
 	struct status_change_entry* sce;
 	struct status_data *status;
 	struct view_data *vd;
