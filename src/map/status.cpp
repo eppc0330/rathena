@@ -12791,7 +12791,7 @@ int status_change_start_sub(struct block_list* src, struct block_list* bl,enum s
 			status_icon = EFST_ATTACK_PROPERTY_NOTHING + val1; // Assign status icon for older clients
 #endif
 
-		if(sc->data[type]) {
+		if(sc->getSCE(type)) {
 			clif_status_change(bl, status_icon, 0, 0, 0, 0, 0);
 		}
 		clif_status_change_sub(bl, bl->id, status_icon, 1, totaltick, subtick, scdb->flag[SCF_SENDVAL1] ? val1 : 1, scdb->flag[SCF_SENDVAL2] ? val2 : 0, scdb->flag[SCF_SENDVAL3] ? val3 : 0);
@@ -13766,7 +13766,7 @@ TIMER_FUNC(status_change_tick_timer) {
 		return 0;
 	}
 
-	struct status_change_entry* const sce = sc->data[type];
+	struct status_change_entry* const sce = sc->getSCE(type);
 	if (!sce) {
 		ShowDebug("status_change_tick_timer: Null pointer id: %d data: %" PRIdPTR " bl-type: %d\n", id, data, bl->type);
 		return 0;
