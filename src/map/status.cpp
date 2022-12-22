@@ -12977,7 +12977,7 @@ int status_change_clear(struct block_list* bl, int type)
 	for (const auto &it : status_db) {
 		sc_type status = static_cast<sc_type>(it.first);
 
-		if (status <= SC_NONE || status >= SC_MAX) //PC official tick timer
+		if (status <= SC_NONE || status >= SC_MAX)
 			continue;
 
 		if (!sc->getSCE(status))
