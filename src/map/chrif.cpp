@@ -1324,6 +1324,15 @@ int chrif_save_scdata(map_session_data *sd) { //parses the sc_data of the player
 		data.val2 = sce->val2;
 		data.val3 = sce->val3;
 		data.val4 = sce->val4;
+		if (sce->tick_timer > 0) {
+			timer = get_timer(sce->tick_timer);
+			if (timer == NULL || timer->func != status_change_tick_timer)
+				continue;
+			if (DIFF_TICK(timer->tick,tick) >= 0)
+				data.tick_time = DIFF_TICK(timer->tick,tick);
+		} else {
+			data.tick_time = 0;
+		}
 		memcpy(WFIFOP(char_fd,14 +count*sizeof(struct status_change_data)),
 			&data, sizeof(struct status_change_data));
 		count++;
