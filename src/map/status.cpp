@@ -13749,7 +13749,7 @@ TIMER_FUNC(status_change_timer){
 TIMER_FUNC(status_change_tick_timer) {
 	enum sc_type type = (sc_type)data;
 	struct block_list* bl;
-	struct map_session_data* sd;
+	map_session_data* sd;
 	int interval = status_get_sc_interval(type);
 	bool dounlock = false;
 
@@ -13759,7 +13759,7 @@ TIMER_FUNC(status_change_tick_timer) {
 		return 0;
 	}
 
-	struct status_change* const sc = status_get_sc(bl);
+	status_change* const sc = status_get_sc(bl);
 	struct status_data* const status = status_get_status_data(bl);
 	if (!sc) {
 		ShowDebug("status_change_tick_timer: Null pointer id: %d data: %" PRIdPTR " bl-type: %d\n", id, data, bl->type);
