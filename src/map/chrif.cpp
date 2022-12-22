@@ -1339,19 +1339,10 @@ int chrif_save_scdata(struct map_session_data *sd) { //parses the sc_data of the
 			data.tick = INFINITE_TICK; //Infinite duration
 		data.tick_total = sc->data[i]->tick_total;
 		data.type = i;
-		data.val1 = sc->data[i]->val1;
-		data.val2 = sc->data[i]->val2;
-		data.val3 = sc->data[i]->val3;
-		data.val4 = sc->data[i]->val4;
-		if (sc->data[i]->tick_timer > 0) {
-			timer = get_timer(sc->data[i]->tick_timer);
-			if (timer == NULL || timer->func != status_change_tick_timer)
-				continue;
-			if (DIFF_TICK(timer->tick,tick) >= 0)
-				data.tick_time = DIFF_TICK(timer->tick,tick);
-		} else {
-			data.tick_time = 0;
-		}
+		data.val1 = sce->val1;
+		data.val2 = sce->val2;
+		data.val3 = sce->val3;
+		data.val4 = sce->val4;
 		memcpy(WFIFOP(char_fd,14 +count*sizeof(struct status_change_data)),
 			&data, sizeof(struct status_change_data));
 		count++;
