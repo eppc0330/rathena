@@ -6445,7 +6445,7 @@ void clif_efst_status_change_sub(struct block_list *tbl, struct block_list *bl, 
 		status_change *sc = status_get_sc(bl);
 		const TimerData *td = (sc && sc->getSCE(type) ? get_timer(sc->getSCE(type)->timer) : nullptr);
 		t_tick tick = 0, cur_tick = gettick();
-		
+
 		if (td != nullptr)
 			tick = DIFF_TICK(td->tick, cur_tick);
 
