@@ -6444,8 +6444,7 @@ void clif_efst_status_change_sub(struct block_list *tbl, struct block_list *bl, 
 		enum sc_type type = sc_display[i]->type;
 		status_change *sc = status_get_sc(bl);
 		const TimerData *td = (sc && sc->getSCE(type) ? get_timer(sc->getSCE(type)->timer) : nullptr);
-		t_tick tick_total = 0, tick = 0, cur_tick = gettick();
-		tick_total = DIFF_TICK(sc->getSCE(type)->tick_total, cur_tick);
+		t_tick tick = 0, cur_tick = gettick();
 		
 		if (td != nullptr)
 			tick = DIFF_TICK(td->tick, cur_tick);
@@ -6469,7 +6468,7 @@ void clif_efst_status_change_sub(struct block_list *tbl, struct block_list *bl, 
 		}
 
 #if PACKETVER > 20120418
-		clif_efst_status_change(tbl, bl->id, target, status_db.getIcon(type), tick_total, tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3);
+		clif_efst_status_change(tbl, bl->id, target, status_db.getIcon(type), sc->getSCE(type)->tick_total, tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3);
 #else
 		clif_status_change_sub(tbl, bl->id, status_db.getIcon(type), 1, tick, tick, sc_display[i]->val1, sc_display[i]->val2, sc_display[i]->val3, target);
 #endif
@@ -6500,9 +6499,9 @@ void clif_efst_status_change(struct block_list *bl, int tid, enum send_target ta
 	WBUFL(buf,offset + 2) = tid;
 	WBUFW(buf,offset + 6) = type;
 #if PACKETVER >= 20111108
-	WBUFL(buf,offset + 8) = client_tick(tick); // Set remaining status duration [exneval]
+	WBUFL(buf,offset + 8) = client_tick(tick_total); // Set remaining status duration [exneval]
 #if PACKETVER >= 20120618
-	WBUFL(buf,offset + 12) = client_tick(tick_total);
+	WBUFL(buf,offset + 12) = client_tick(tick);
 	offset += 4;
 #endif
 	WBUFL(buf,offset + 12) = val1;
