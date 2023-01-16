@@ -6368,7 +6368,7 @@ void clif_status_change_sub(struct block_list *bl, int id, int type, int flag, t
 				tick = 200;
 				break;
 			default:
-				if (tick < 0)
+				if (tick <= 0)
 					tick = 9999; // this is indeed what official servers do
 				break;
 		}
