@@ -19,7 +19,7 @@
 //}
 
 //--------------------------------------
-//ynamicNPC NoName
+//DynamicNPC NoName
 BUILDIN_FUNC(duplicatenpc)
 {
 	int class_ = -1;
