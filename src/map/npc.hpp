@@ -1592,7 +1592,6 @@ void npc_market_delfromsql_(const char *exname, t_itemid nameid, bool clear);
 	TIMER_FUNC(npc_secure_timeout_timer);
 #endif
 
-TIMER_FUNC(npc_dynamicnpc_removal_timer);
 // @commands (script-based)
 int npc_do_atcmd_event(map_session_data* sd, const char* command, const char* message, const char* eventname);
 
