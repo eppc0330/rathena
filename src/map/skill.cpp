@@ -7669,6 +7669,39 @@ int skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, ui
 		clif_skill_nodamage(src,bl,skill_id,skill_lv,sc_start(src,bl,type,100,skill_lv,skill_get_time(skill_id,skill_lv)));
 		break;
 
+	case NPC_IMMUNE_PROPERTY_COUNTER:
+		{
+			int element = -1;
+			int64 max_value = -1;
+			
+			for (int i = 0; i < ELE_MAX; i++) {
+			    if (md->dmgele[i] > 0) {
+			        if (md->dmgele[i] > max_value) {
+						element = i;
+			            max_value = md->dmgele[i];
+			        }
+			    }
+			}
+		
+			if(src->type == BL_MOB && element >= 0) {
+				switch (element) {
+					case ELE_NEUTRAL: type = SC_IMMUNE_PROPERTY_NOTHING; break;
+					case ELE_WATER: type = SC_IMMUNE_PROPERTY_WATER; break;
+					case ELE_EARTH: type = SC_IMMUNE_PROPERTY_GROUND; break;
+					case ELE_FIRE: type = SC_IMMUNE_PROPERTY_FIRE; break;
+					case ELE_WIND: type = SC_IMMUNE_PROPERTY_WIND; break;
+					case ELE_POISON: type = SC_IMMUNE_PROPERTY_POISON; break;
+					case ELE_HOLY: type = SC_IMMUNE_PROPERTY_SAINT; break;
+					case ELE_DARK: type = SC_IMMUNE_PROPERTY_DARKNESS; break;
+					case ELE_GHOST: type = SC_IMMUNE_PROPERTY_TELEKINESIS; break;
+					case ELE_UNDEAD: type = SC_IMMUNE_PROPERTY_UNDEAD; break;
+				}
+				clif_skill_nodamage(src,bl,NPC_IMMUNE_PROPERTY,skill_lv,sc_start(src,bl,type,100,skill_lv,skill_get_time(skill_id,skill_lv)));
+			} else
+				break;
+		}
+		break;
+
 	case PR_KYRIE:
 	case MER_KYRIE:
 	case SU_TUNAPARTY:
