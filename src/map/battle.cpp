@@ -6497,7 +6497,7 @@ static struct Damage initialize_weapon_data(struct block_list *src, struct block
 	wd.blewcount =skill_get_blewcount(skill_id,skill_lv);
 	wd.miscflag = wflag;
 	wd.flag = BF_WEAPON; //Initial Flag
-	wd.flag |= (skill_id||wd.miscflag)?BF_SKILL:BF_NORMAL; // Baphomet card's splash damage is counted as a skill. [Inkfish]
+	wd.flag |= (skill_id||((sd&&sd->state.jumpattack == 0)&&wd.miscflag))?BF_SKILL:BF_NORMAL; // Baphomet card's splash damage is counted as a skill. [Inkfish]
 	wd.isspdamage = false;
 	wd.damage = wd.damage2 =
 #ifdef RENEWAL
