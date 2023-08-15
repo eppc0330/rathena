@@ -3015,7 +3015,6 @@ static std::bitset<NK_MAX> battle_skill_get_damage_properties(uint16 skill_id, i
 		if (is_splash) {
 			std::bitset<NK_MAX> tmp_nk;
 
-			tmp_nk.set(NK_IGNOREATKCARD);
 			tmp_nk.set(NK_IGNOREFLEE);
 
 			return tmp_nk;
@@ -4025,7 +4024,7 @@ static void battle_calc_multi_attack(struct Damage* wd, struct block_list *src,s
 	status_change *tsc = status_get_sc(target);
 	struct status_data *tstatus = status_get_status_data(target);
 
-	if( sd && !skill_id ) {	// if no skill_id passed, check for double attack [helvetica]
+	if( sd && !skill_id && wd->miscflag != 1) {	// if no skill_id passed, check for double attack [helvetica]
 		short i;
 		if(sc && sc->getSCE(SC_FEARBREEZE) && sd->weapontype1==W_BOW
 			&& (i = sd->equip_index[EQI_AMMO]) >= 0 && sd->inventory_data[i] && sd->inventory.u.items_inventory[i].amount > 1)
@@ -4073,6 +4072,7 @@ static void battle_calc_multi_attack(struct Damage* wd, struct block_list *src,s
 
 			sc_start(src,src,SC_QD_SHOT_READY,100,target->id,skill_get_time(RL_QD_SHOT,1));
 		}
+		sd->state.multihit = wd->div_;
 	}
 
 	switch (skill_id) {
@@ -4178,6 +4178,27 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 	}
 
 	switch(skill_id) {
+	case 0:
+		if (sd) {
+			if (wd->miscflag & 1/* && sd->state.jumpattack == 0*/) {
+				int penalty = 0;
+				int dist = distance_xy(target->x, target->y, src->targetx, src->targety);
+				if (dist > 0) {
+					if (dist == 1)
+						penalty = 3;
+					else if (dist < 4)
+						penalty = 10;
+					else if (dist < 7)
+						penalty = 20;
+					else if (dist < 11)
+						penalty = 35;
+					else
+						penalty = 50;
+				}
+				skillratio = skillratio * sd->state.multihit * (100 - penalty) / 100;
+			}
+		}
+		break;
 		case SM_BASH:
 		case MS_BASH:
 			skillratio += 30 * skill_lv;
