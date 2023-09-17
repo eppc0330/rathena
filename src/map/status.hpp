@@ -1282,6 +1282,8 @@ enum sc_type : int16 {
 
 	SC_RUSH_QUAKE1,
 	SC_RUSH_QUAKE2,
+	
+	SC_G_LIFEPOTION,
 		
 	//bonus bJumprange
 	SC_JUMPPENALTY,
