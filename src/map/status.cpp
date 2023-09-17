@@ -8229,11 +8229,15 @@ static short status_calc_aspd(struct block_list *bl, status_change *sc, bool fix
 		map_session_data* sd = BL_CAST(BL_PC, bl);
 		uint8 skill_lv;
 
-		if (sd && (skill_lv = pc_checkskill(sd, BA_MUSICALLESSON)) > 0)
-			bonus += skill_lv;
-		if (sc->getSCE(SC_JUMPPENALTY)) {
-			if (sd && sd->jumpattack.penalty > 0)
-				bonus -= sd->jumpattack.penalty;
+		if (sd) {
+			if ((skill_lv = pc_checkskill(sd, BA_MUSICALLESSON)) > 0)
+				bonus += skill_lv;
+			if ((skill_lv = pc_checkskill(sd, RG_PLAGIARISM)) > 0)
+				bonus += skill_lv;
+			if (sc->getSCE(SC_JUMPPENALTY)) {
+				if (sd && sd->jumpattack.penalty > 0)
+					bonus -= sd->jumpattack.penalty;
+			}
 		}
 	}
 
