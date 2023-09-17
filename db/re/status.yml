@@ -8772,6 +8772,12 @@ Body:
     DurationLookup: MT_RUSH_QUAKE
     CalcFlags:
       All: true
+  - Status: G_LIFEPOTION
+    Icon: EFST_G_LIFEPOTION
+    Flags:
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
   - Status: Jumppenalty
     CalcFlags:
       Aspd: true
