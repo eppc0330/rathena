@@ -4025,7 +4025,7 @@ static void battle_calc_multi_attack(struct Damage* wd, struct block_list *src,s
 	status_change *tsc = status_get_sc(target);
 	struct status_data *tstatus = status_get_status_data(target);
 
-	if( sd && !skill_id ) {	// if no skill_id passed, check for double attack [helvetica]
+	if( sd && !skill_id && sd->state.jumpattack != 1) {	// if no skill_id passed, check for double attack [helvetica]
 		short i;
 		if(sc && sc->getSCE(SC_FEARBREEZE) && sd->weapontype1==W_BOW
 			&& (i = sd->equip_index[EQI_AMMO]) >= 0 && sd->inventory_data[i] && sd->inventory.u.items_inventory[i].amount > 1)
@@ -4178,6 +4178,10 @@ static int battle_calc_attack_skill_ratio(struct Damage* wd, struct block_list *
 	}
 
 	switch(skill_id) {
+		case 0:
+			if (sd && sd->jumpattack.rate > 0 && sd->state.jumpattack == 1)
+				skillratio += sd->jumpattack.rate;
+			break;
 		case SM_BASH:
 		case MS_BASH:
 			skillratio += 30 * skill_lv;
@@ -6506,7 +6510,7 @@ static struct Damage initialize_weapon_data(struct block_list *src, struct block
 	wd.blewcount =skill_get_blewcount(skill_id,skill_lv);
 	wd.miscflag = wflag;
 	wd.flag = BF_WEAPON; //Initial Flag
-	wd.flag |= (skill_id||wd.miscflag)?BF_SKILL:BF_NORMAL; // Baphomet card's splash damage is counted as a skill. [Inkfish]
+	wd.flag |= (skill_id||((sd&&sd->state.jumpattack == 0)&&wd.miscflag))?BF_SKILL:BF_NORMAL; // Baphomet card's splash damage is counted as a skill. [Inkfish]
 	wd.isspdamage = false;
 	wd.damage = wd.damage2 =
 #ifdef RENEWAL
@@ -9145,7 +9149,7 @@ enum damage_lv battle_weapon_attack(struct block_list* src, struct block_list* t
 		}
 	}
 
-	if(sd && (skillv = pc_checkskill(sd,MO_TRIPLEATTACK)) > 0) {
+	if(sd && (skillv = pc_checkskill(sd,MO_TRIPLEATTACK)) > 0 && sd->state.jumpattack != 1) {
 #ifdef RENEWAL
 		int triple_rate = 30; //Base Rate
 #else

@@ -1284,6 +1284,11 @@ enum sc_type : int16 {
 	SC_RUSH_QUAKE2,
 	
 	SC_G_LIFEPOTION,
+		
+	//bonus bJumprange
+	SC_JUMPPENALTY,
+	SC_DELSEFFECT,
+
 #ifdef RENEWAL
 	SC_EXTREMITYFIST2, //! NOTE: This SC should be right before SC_MAX, so it doesn't disturb if RENEWAL is disabled
 #endif
@@ -3125,6 +3130,7 @@ struct weapon_atk {
 	unsigned short atk, atk2;
 	unsigned short range;
 	unsigned char ele;
+	int original_range;
 #ifdef RENEWAL
 	unsigned short matk;
 	unsigned char wlv;
