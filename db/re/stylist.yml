@@ -43,7 +43,7 @@ Header:
 Body:
   - Look: Hair_Color
     Options:
-      - Index: -1
+      - Index: 0
         Value: 0
         CostsHuman:
             Price: 0
