@@ -22750,7 +22750,7 @@ void clif_parse_stylist_buy( int fd, map_session_data* sd ){
 			look = LOOK_BODY2;
 			break;
 	}
-	if (p->index != 0 && !clif_parse_stylist_buy_sub(sd, look, p->index)) {
+	if (((p->category == 0 && p->index >= 0) || p->index > 0) && !clif_parse_stylist_buy_sub(sd, look, p->index)) {
 		clif_stylist_response(sd, true);
 		return;
 	}
