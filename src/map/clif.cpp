@@ -22727,33 +22727,41 @@ void clif_parse_stylist_buy( int fd, map_session_data* sd ){
 #endif
 #if PACKETVER >= 20231218
 	_look look = LOOK_HAIR_COLOR;
-	switch (p->category) {
-		case 0:
-			look = LOOK_HAIR_COLOR;
-			break;
-		case 1:
-			look = LOOK_HAIR;
-			break;
-		case 2:
-			look = LOOK_CLOTHES_COLOR;
-			break;
-		case 3:
-			look = LOOK_HEAD_TOP;
-			break;
-		case 4:
-			look = LOOK_HEAD_MID;
-			break;
-		case 5:
-			look = LOOK_HEAD_BOTTOM;
-			break;
-		case 9:
-			look = LOOK_BODY2;
-			break;
+	for (int i = 0; i < p->count; i++) {
+		int offset = 8 * i;
+		p->PacketLength = sizeof(struct PACKET_CZ_REQ_STYLE_CHANGE3) + offset;
+		p->category = RFIFOW(fd, 6 + offset);
+		p->index = RFIFOW(fd, 10 + offset);
+
+		switch (p->category) {
+			case 0:
+				look = LOOK_HAIR_COLOR;
+				break;
+			case 1:
+				look = LOOK_HAIR;
+				break;
+			case 2:
+				look = LOOK_CLOTHES_COLOR;
+				break;
+			case 3:
+				look = LOOK_HEAD_TOP;
+				break;
+			case 4:
+				look = LOOK_HEAD_MID;
+				break;
+			case 5:
+				look = LOOK_HEAD_BOTTOM;
+				break;
+			case 9:
+				look = LOOK_BODY2;
+				break;
+		}
+		if (((p->category == 0 && p->index >= 0) || p->index > 0) && !clif_parse_stylist_buy_sub(sd, look, p->index)) {
+			clif_stylist_response(sd, true);
+			return;
+		}
 	}
-	if (((p->category == 0 && p->index >= 0) || p->index > 0) && !clif_parse_stylist_buy_sub(sd, look, p->index)) {
-		clif_stylist_response(sd, true);
-		return;
-	}
+	RFIFOSKIP(fd, p->PacketLength - 14);
 #else
 	if( p->HeadPalette != 0 && !clif_parse_stylist_buy_sub( sd, LOOK_HAIR_COLOR, p->HeadPalette ) ){
 		clif_stylist_response( sd, true );
