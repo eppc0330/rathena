@@ -937,9 +937,9 @@ Body:
             RequiredItem: Costume_Ticket
       - Index: 130
         Value: 4308
-        CostsHuman:
+        CostsDoram:
             Price: 0
       - Index: 131
         Value: 4218
-        CostsHuman:
+        CostsDoram:
             RequiredItem: Costume_Ticket
