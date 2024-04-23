@@ -22752,6 +22752,12 @@ void clif_parse_stylist_buy( int fd, map_session_data* sd ){
 			case 5:
 				look = LOOK_HEAD_BOTTOM;
 				break;
+			case 6:
+				look = LOOK_HAIR;
+				break;
+			case 8:
+				look = LOOK_CLOTHES_COLOR;
+				break;
 			case 9:
 				look = LOOK_BODY2;
 				break;
