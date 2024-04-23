@@ -22761,6 +22761,10 @@ void clif_parse_stylist_buy( int fd, map_session_data* sd ){
 			case 9:
 				look = LOOK_BODY2;
 				break;
+			default:
+				look = LOOK_HAIR_COLOR;
+				ShowError("p->category : %d, p->index : %d, look : %d, unkown category\n", p->category, p->index, look);
+				break;
 		}
 		if (((p->category == 0 && p->index >= 0) || p->index > 0) && !clif_parse_stylist_buy_sub(sd, look, p->index)) {
 			clif_stylist_response(sd, true);
