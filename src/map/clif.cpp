@@ -22763,7 +22763,7 @@ void clif_parse_stylist_buy( int fd, map_session_data* sd ){
 				break;
 			default:
 				look = LOOK_HAIR_COLOR;
-				ShowError("p->category : %d, undefined category\n", p->category);
+				ShowError("p->category : %d, undefined category\n", p->category); //Leave this for possible existence of case 7
 				break;
 		}
 		if (((p->category == 0 && p->index >= 0) || p->index > 0) && !clif_parse_stylist_buy_sub(sd, look, p->index)) {
