@@ -22636,7 +22636,8 @@ void clif_parse_stylist_buy( int fd, map_session_data* sd ){
 	_look look = LOOK_HAIR_COLOR;
 	for (int i = 0; i < p->count; i++) {
 		int offset = 8 * i;
-		p->PacketLength = sizeof(struct PACKET_CZ_REQ_STYLE_CHANGE3) + offset;
+		p->PacketLength = sizeof( *p );
+		p->PacketLength += offset;
 		p->category = RFIFOW(fd, 6 + offset);
 		p->index = RFIFOW(fd, 10 + offset);
 
