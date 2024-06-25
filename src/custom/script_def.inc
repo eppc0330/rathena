@@ -9,3 +9,7 @@
  **/
 
 //BUILDIN_DEF(example,""),
+
+//DynamicNPC noname
+BUILDIN_DEF(duplicatenpc, "ssssiii???"),
+BUILDIN_DEF(duplicateremove, "?"),
