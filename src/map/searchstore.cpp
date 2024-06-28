@@ -361,6 +361,7 @@ void searchstore_click(map_session_data& sd, uint32 account_id, int store_id, t_
 					case SEARCHTYPE_VENDING:      vending_vendinglistreq(&sd, account_id); break;
 					case SEARCHTYPE_BUYING_STORE: buyingstore_open(&sd, account_id);       break;
 				}
+			}
 			break;
 		default:
 			// unknown
