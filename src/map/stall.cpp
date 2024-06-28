@@ -629,7 +629,7 @@ void stall_vending_purchasereq(map_session_data* sd, int aid, int uid, const uin
 		return;
 	}
 
-	if( !searchstore_queryremote(sd, st->unique_id) && (sd->bl.m != st->bl.m || !check_distance_bl(&sd->bl, &st->bl, AREA_SIZE)) )
+	if( !searchstore_queryremote(*sd, st->unique_id) && (sd->bl.m != st->bl.m || !check_distance_bl(&sd->bl, &st->bl, AREA_SIZE)) )
 		return; // shop too far away
 
 	if( count < 1 || count > MAX_STALL_SLOT || count > st->vend_num )
@@ -822,7 +822,7 @@ void stall_buying_purchasereq(map_session_data* sd, int aid, int uid, const stru
 		return;
 	}
 
-	if( !searchstore_queryremote(sd, st->unique_id) && (sd->bl.m != st->bl.m || !check_distance_bl(&sd->bl, &st->bl, AREA_SIZE)) ){
+	if( !searchstore_queryremote(*sd, st->unique_id) && (sd->bl.m != st->bl.m || !check_distance_bl(&sd->bl, &st->bl, AREA_SIZE)) ){
 		clif_buyingstore_trade_failed_seller(sd, BUYINGSTORE_TRADE_SELLER_FAILED, 0);
 		return; // shop too far away
 	}
