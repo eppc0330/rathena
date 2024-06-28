@@ -197,7 +197,7 @@ void searchstore_query(map_session_data& sd, e_searchstore_searchtype type, unsi
 	}
 
 	for (auto& itStalls : stall_db){
-		if(itStalls->owner_id == sd->status.char_id) // skip own shop, if any
+		if(itStalls->owner_id == sd.status.char_id) // skip own shop, if any
 			continue;
 
 		if( !stall_searchall(pl_sd, &s, itStalls, type) ) { // exceeded result size
@@ -312,21 +312,12 @@ void searchstore_click(map_session_data& sd, uint32 account_id, int store_id, t_
 			return;
 		}
 
-<<<<<<< Implemented-offline-vending-shop
-		if( !searchstore_hasstore(pl_sd, sd->searchstore.type) || searchstore_getstoreid(pl_sd, sd->searchstore.type) != store_id ) { // no longer vending/buying or not same shop
+		if( !searchstore_hasstore(*pl_sd, sd.searchstore.type) || searchstore_getstoreid(*pl_sd, sd.searchstore.type) != store_id ) { // no longer vending/buying or not same shop
 			clif_search_store_info_failed(sd, SSI_FAILED_SSILIST_CLICK_TO_OPEN_STORE);
 			return;
 		}
 
-		store_search = searchstore_getsearchfunc(sd->searchstore.type);
-=======
-	if( !searchstore_hasstore(*pl_sd, sd.searchstore.type) || searchstore_getstoreid(*pl_sd, sd.searchstore.type) != store_id ) { // no longer vending/buying or not same shop
-		clif_search_store_info_failed(sd, SSI_FAILED_SSILIST_CLICK_TO_OPEN_STORE);
-		return;
-	}
-
-	store_search = searchstore_getsearchfunc(sd.searchstore.type);
->>>>>>> master
+		store_search = searchstore_getsearchfunc(sd.searchstore.type);
 
 		if( !store_search(pl_sd, nameid) ) {// item no longer being sold/bought
 			clif_search_store_info_failed(sd, SSI_FAILED_SSILIST_CLICK_TO_OPEN_STORE);
@@ -337,56 +328,39 @@ void searchstore_click(map_session_data& sd, uint32 account_id, int store_id, t_
 	switch( sd.searchstore.effect ) {
 		case SEARCHSTORE_EFFECT_NORMAL:
 			// display coords
-<<<<<<< Implemented-offline-vending-shop
 			if(store_id >= START_STALL_NUM){
 				struct s_stall_data* st;
 				if( (st = map_id2st(store_id)) == NULL )
 					return;
-				if( sd->bl.m != st->bl.m ) // not on same map, wipe previous marker
+				if( sd.bl.m != st->bl.m ) // not on same map, wipe previous marker
 					clif_search_store_info_click_ack(sd, -1, -1);
 				else
 					clif_search_store_info_click_ack(sd, st->bl.x, st->bl.y);
 			} else {
-				if( sd->bl.m != pl_sd->bl.m ) // not on same map, wipe previous marker
+				if( sd.bl.m != pl_sd->bl.m ) // not on same map, wipe previous marker
 					clif_search_store_info_click_ack(sd, -1, -1);
 				else
 					clif_search_store_info_click_ack(sd, pl_sd->bl.x, pl_sd->bl.y);
 			}
  			break;
-		case EFFECTTYPE_CASH:
+		case SEARCHSTORE_EFFECT_REMOTE:
 			// open remotely
 			// to bypass range checks
-			sd->searchstore.remote_id = account_id;
+			sd.searchstore.remote_id = account_id;
 			
 			if(store_id >= START_STALL_NUM){
 				struct s_stall_data* st;
 				if( (st = map_id2st(store_id)) == NULL )
 					return;
-				switch( sd->searchstore.type ) {
-					case SEARCHTYPE_VENDING:      clif_stall_vending_list( sd, st ); break;
-					case SEARCHTYPE_BUYING_STORE: clif_stall_buying_list( sd, st );  break;
+				switch( sd.searchstore.type ) {
+					case SEARCHTYPE_VENDING:      clif_stall_vending_list( &sd, st ); break;
+					case SEARCHTYPE_BUYING_STORE: clif_stall_buying_list( &sd, st );  break;
 				}
 			} else {
-				switch( sd->searchstore.type ) {
-					case SEARCHTYPE_VENDING:      vending_vendinglistreq(sd, account_id); break;
-					case SEARCHTYPE_BUYING_STORE: buyingstore_open(sd, account_id);       break;
+				switch( sd.searchstore.type ) {
+					case SEARCHTYPE_VENDING:      vending_vendinglistreq(&sd, account_id); break;
+					case SEARCHTYPE_BUYING_STORE: buyingstore_open(&sd, account_id);       break;
 				}
-=======
-			if( sd.bl.m != pl_sd->bl.m ) // not on same map, wipe previous marker
-				clif_search_store_info_click_ack(sd, -1, -1);
-			else
-				clif_search_store_info_click_ack(sd, pl_sd->bl.x, pl_sd->bl.y);
-			break;
-		case SEARCHSTORE_EFFECT_REMOTE:
-			// open remotely
-			// to bypass range checks
-			sd.searchstore.remote_id = account_id;
-
-			switch( sd.searchstore.type ) {
-				case SEARCHTYPE_VENDING:      vending_vendinglistreq(&sd, account_id); break;
-				case SEARCHTYPE_BUYING_STORE: buyingstore_open(&sd, account_id);       break;
->>>>>>> master
-			}
 			break;
 		default:
 			// unknown
