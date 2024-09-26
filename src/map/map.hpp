@@ -447,7 +447,7 @@ enum auto_trigger_flag {
 struct block_list {
 	struct block_list *next,*prev;
 	int id;
-	int16 m,x,y;
+	int16 m,x,y,targetx,targety;
 	enum bl_type type;
 };
 

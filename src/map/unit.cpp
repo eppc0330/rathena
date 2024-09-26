@@ -2921,6 +2921,9 @@ static int unit_attack_timer_sub(struct block_list* src, int tid, t_tick tick)
 		map_freeblock_lock();
 		ud->attacktarget_lv = battle_weapon_attack(src,target,tick,0);
 
+		if (sd)
+			sd->state.multihit = 1;
+
 		if(sd && sd->status.pet_id > 0 && sd->pd && battle_config.pet_attack_support)
 			pet_target_check(sd->pd,target,0);
 

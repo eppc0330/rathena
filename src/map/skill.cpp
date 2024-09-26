@@ -7012,6 +7012,8 @@ int skill_castend_damage_id (struct block_list* src, struct block_list *bl, uint
 					skill_attack(BF_WEAPON, src, src, bl, skill_id, skill_lv, tick, SD_LEVEL|flag);
 			} else {
 				skill_area_temp[1] = bl->id;
+				src->targetx = bl->x;
+				src->targety = bl->y;
 				map_foreachinallrange(skill_area_sub, bl,
 					sd->bonus.splash_range, BL_CHAR,
 					src, skill_id, skill_lv, tick, flag | BCT_ENEMY | 1,
