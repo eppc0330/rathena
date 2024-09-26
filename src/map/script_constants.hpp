@@ -1916,6 +1916,16 @@
 	export_constant(SC_POWERUP);
 	export_constant(SC_AGIUP);
 	export_constant(SC_PROTECTION);
+	
+	//premium buff 
+	export_constant(SC_KAFRA_ITEMBOOST);
+	export_constant(SC_KAFRA_EXPBOOST);
+	export_constant(SC_SUB_ITEMBOOST);
+	export_constant(SC_SUB_EXPBOOST);
+	export_constant(SC_SUB_DEADPENALTY);
+	export_constant(SC_PREMIUM_STORAGEBOOST);
+	export_constant(SC_PREMIUM_ITEMBOOST);
+	export_constant(SC_PREMIUM_EXPBOOST);
 
 	/* status icons */
 	export_deprecated_constant2("SI_BLANK",-1);
@@ -11386,6 +11396,7 @@
 	export_constant(SCF_REQUIRENOWEAPON);
 	export_constant(SCF_REMOVEFROMHOMONWARP);
 	export_constant(SCF_REMOVEFROMHOMONMAPWARP);
+	export_constant(SCF_NOTICKSAVE);
 
 	/* enchantgrades */
 	export_constant(ENCHANTGRADE_NONE);

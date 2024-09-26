@@ -13016,6 +13016,18 @@ int status_change_start(struct block_list* src, struct block_list* bl,enum sc_ty
 		}
 		calc_flag.reset(SCB_BODY);
 	}*/
+	
+	t_tick totaltick; 
+	
+	if(duration > INT_MAX)
+		totaltick = static_cast<int64>(duration);
+	else
+		totaltick = tick;
+	
+	if (scdb->flag[SCF_NOTICKSAVE]) {
+		int64 past = (static_cast<int64>(val4) - time(NULL)) * 1000;
+		tick = i64max(0, totaltick + past);
+	}
 
 	if (!(flag&SCSTART_NOICON) && !(flag&SCSTART_LOADED && scdb->flag[SCF_DISPLAYPC] || scdb->flag[SCF_DISPLAYNPC])) {
 		int status_icon = scdb->icon;
