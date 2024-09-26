@@ -48157,3 +48157,25 @@ Body:
     Duration1: 10000
     Cooldown: 60000
     Status: Emergency_Move
+
+  - Id: 9999
+    Name: NPC_IMMUNE_PROPERTY_COUNTER
+    Description: Property Immune Counter
+    MaxLevel: 5
+    TargetType: Support
+    DamageFlags:
+      NoDamage: true
+    Flags:
+      IsNpc: true
+    Range:
+      - Level: 1
+        Size: 5
+      - Level: 2
+        Size: 10
+      - Level: 3
+        Size: 15
+      - Level: 4
+        Size: 20
+      - Level: 5
+        Size: 25
+    Duration1: 30000

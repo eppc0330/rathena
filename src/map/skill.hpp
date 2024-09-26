@@ -2533,6 +2533,8 @@ enum e_skill {
 	ABR_NET_REPAIR,
 	ABR_NET_SUPPORT,
 	ABR_INFINITY_BUSTER,
+
+	NPC_IMMUNE_PROPERTY_COUNTER = 9999,
 };
 
 /// The client view ids for land skills.

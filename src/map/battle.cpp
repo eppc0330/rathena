@@ -3542,6 +3542,11 @@ int battle_get_weapon_element(struct Damage* wd, struct block_list *src, struct 
 		element = ELE_NEUTRAL;
 #endif
 
+	if(sd != nullptr) {
+		if (weapon_position == EQI_HAND_R || sstatus->rhw.ele == ELE_NEUTRAL)
+			sd->hitelement = element;
+	}
+
 	return element;
 }
 
@@ -3611,6 +3616,9 @@ int battle_get_magic_element(struct block_list* src, struct block_list* target, 
 			break;
 	}
 
+	if(sd != nullptr)
+		sd->hitelement = element;
+
 	return element;
 }
 
@@ -3621,6 +3629,10 @@ int battle_get_misc_element(struct block_list* src, struct block_list* target, u
 		element = ELE_NEUTRAL;
 	else if (element == ELE_RANDOM) //Use random element
 		element = rnd()%ELE_ALL;
+
+	map_session_data *sd = BL_CAST(BL_PC, src);
+	if(sd != nullptr)
+		sd->hitelement = element;
 
 	return element;
 }
@@ -9452,6 +9464,19 @@ struct Damage battle_calc_attack(int attack_type,struct block_list *bl,struct bl
 
 	if (sd && d.damage + d.damage2 > 1)
 		battle_vanish_damage(sd, target, d.flag);
+
+	mob_data* md = BL_CAST(BL_MOB, target);
+	if (sd != nullptr && md != nullptr) {
+		int element = sd->hitelement;
+		uint64 damage = d.damage + d.damage2;
+		if (ULLONG_MAX - damage > md->dmgele[element])
+			md->dmgele[element] += damage;
+		else if (md->dmgele[element] == ULLONG_MAX)
+			md->dmgele[element] += 0; //Stop recording damage once the cap has been reached.
+		else { //Cap damage log...
+			md->dmgele[element] = ULLONG_MAX;
+		}
+	}
 
 	return d;
 }
