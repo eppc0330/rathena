@@ -6387,7 +6387,7 @@ int pc_useitem(map_session_data *sd,int n)
 	if( id->flag.delay_consume > 0 && ( sd->ud.skilltimer != INVALID_TIMER /*|| !status_check_skilluse(&sd->bl, &sd->bl, ALL_RESURRECTION, 0)*/ ) )
 		return 0;
 
-	if( id->delay.duration > 0 && !pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && pc_itemcd_check(sd, id, tick, n))
+	if( (id->delay.checkstatus == true || id->delay.duration > 0) && !pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && pc_itemcd_check(sd, id, tick, n))
 		return 0;
 
 	/* on restricted maps the item is consumed but the effect is not used */
