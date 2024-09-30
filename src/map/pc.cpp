@@ -6387,7 +6387,7 @@ int pc_useitem(map_session_data *sd,int n)
 	if( id->flag.delay_consume > 0 && ( sd->ud.skilltimer != INVALID_TIMER /*|| !status_check_skilluse(&sd->bl, &sd->bl, ALL_RESURRECTION, 0)*/ ) )
 		return 0;
 
-	if( id->delay.duration > 0 && !pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && pc_itemcd_check(sd, id, tick, n))
+	if( (id->delay.checkstatus == true || id->delay.duration > 0) && !pc_has_permission(sd,PC_PERM_ITEM_UNCONDITIONAL) && pc_itemcd_check(sd, id, tick, n))
 		return 0;
 
 	/* on restricted maps the item is consumed but the effect is not used */
@@ -8253,6 +8253,13 @@ static void pc_calcexp(map_session_data *sd, t_exp *base_exp, t_exp *job_exp, st
 		if (battle_config.pk_mode &&
 			(int)(status_get_lv(src) - sd->status.base_level) >= 20)
 			bonus += 15; // pk_mode additional exp if monster >20 levels [Valaris]
+
+		if (sd->sc.getSCE(SC_PREMIUM_EXPBOOST))
+			bonus += sd->sc.getSCE(SC_PREMIUM_EXPBOOST)->val1;
+		if (sd->sc.getSCE(SC_SUB_EXPBOOST))
+			bonus += sd->sc.getSCE(SC_SUB_EXPBOOST)->val1;
+		if (sd->sc.getSCE(SC_KAFRA_EXPBOOST))
+			bonus += sd->sc.getSCE(SC_KAFRA_EXPBOOST)->val1;
 
 		if (src && src->type == BL_MOB && pc_isvip(sd)) { // EXP bonus for VIP player
 			vip_bonus_base = battle_config.vip_base_exp_increase;
@@ -14492,12 +14499,19 @@ uint8 pc_itemcd_check(map_session_data *sd, struct item_data *id, t_tick tick, u
 
 	// Send reply of delay remains
 	if (sc->getSCE(id->delay.sc)) {
-		const struct TimerData *timer = get_timer(sc->getSCE(id->delay.sc)->timer);
-		clif_msg_value(sd, MSI_ITEM_REUSE_LIMIT_SECOND, (int)(timer ? DIFF_TICK(timer->tick, tick) / 1000 : 99));
+		if (id->delay.checkstatus) {
+			char e_msg[CHAT_SIZE_MAX];
+			sprintf(e_msg, msg_txt(sd, 369));
+			clif_messagecolor(&sd->bl, color_table[COLOR_WHITE], e_msg, false, SELF);
+		} else {
+			const struct TimerData *timer = get_timer(sc->getSCE(id->delay.sc)->timer);
+			clif_msg_value(sd, MSI_ITEM_REUSE_LIMIT_SECOND, (int)(timer ? DIFF_TICK(timer->tick, tick) / 1000 : 99));
+		}
 		return 1;
 	}
-
-	sc_start(&sd->bl, &sd->bl, id->delay.sc, 100, id->nameid, id->delay.duration);
+	
+	if (id->delay.checkstatus == false)
+		sc_start(&sd->bl, &sd->bl, id->delay.sc, 100, id->nameid, id->delay.duration);
 	return 0;
 }
 
