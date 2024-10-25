@@ -2288,6 +2288,7 @@ bool npc_scriptcont(map_session_data* sd, int id, bool closing){
 
 	if( nd != nullptr && nd->dynamicnpc.owner_char_id != 0 ){
 		nd->dynamicnpc.last_interaction = gettick();
+		nd->dynamicnpc.removal_tid = add_timer(nd->dynamicnpc.last_interaction + battle_config.feature_dynamicnpc_timeout, npc_dynamicnpc_removal_timer, nd->bl.id, (intptr_t)nullptr);
 	}
 
 	/**
@@ -6258,4 +6259,69 @@ void do_init_npc(void){
 	fake_nd->u.scr.timerid = INVALID_TIMER;
 	map_addiddb(&fake_nd->bl);
 	// End of initialization
+}
+
+/*==========================================
+ * //Dynamic NPC noname 
+ *------------------------------------------*/
+void npc_noname_duplicate(map_session_data *sd,struct npc_data *nd_target)
+{
+	strdb_put(npcname_db, nd_target->exname, nd_target);
+
+	if (nd_target->subtype == NPCTYPE_SCRIPT)
+	{
+		for (int i = 0; i < nd_target->u.scr.label_list_num; i++)
+		{
+			char* lname = nd_target->u.scr.label_list[i].name;
+			int pos = nd_target->u.scr.label_list[i].pos;
+
+			if ((lname[0] == 'O' || lname[0] == 'o') && (lname[1] == 'N' || lname[1] == 'n'))
+			{
+				struct event_data* ev;
+				char buf[EVENT_NAME_LENGTH];
+				snprintf(buf, ARRAYLENGTH(buf), "%s::%s", nd_target->exname, lname);
+
+				CREATE(ev, struct event_data, 1);
+				ev->nd = nd_target;
+				ev->pos = pos;
+				if (strdb_put(ev_db, buf, ev))
+					ShowWarning("npc_parse_duplicate : duplicate event %s (%s)\n", buf, nd_target->name);
+			}
+		}
+
+		for (int i = 0; i < nd_target->u.scr.label_list_num; i++)
+		{
+			int t = 0, k = 0;
+			char* lname = nd_target->u.scr.label_list[i].name;
+			int pos = nd_target->u.scr.label_list[i].pos;
+			if (sscanf(lname, "OnTimer%d%n", &t, &k) == 1 && lname[k] == '\0')
+			{
+				struct npc_timerevent_list* te = nd_target->u.scr.timer_event;
+				int j, k = nd_target->u.scr.timeramount;
+				if (te == NULL)
+					te = (struct npc_timerevent_list*)aMalloc(sizeof(struct npc_timerevent_list));
+				else
+					te = (struct npc_timerevent_list*)aRealloc(te, sizeof(struct npc_timerevent_list) * (k + 1));
+
+				for (j = 0; j < k; j++)
+				{
+					if (te[j].timer > t)
+					{
+						memmove(te + j + 1, te + j, sizeof(struct npc_timerevent_list) * (k - j));
+						break;
+					}
+				}
+				te[j].timer = t;
+				te[j].pos = pos;
+				nd_target->u.scr.timer_event = te;
+				nd_target->u.scr.timeramount++;
+			}
+		}
+		nd_target->u.scr.timerid = INVALID_TIMER;
+	}
+	char evname[EVENT_NAME_LENGTH];
+	snprintf(evname, ARRAYLENGTH(evname), "%s::%s", nd_target->exname, script_config.init_event_name);
+	struct event_data* ev = (struct event_data*)strdb_get(ev_db, evname);
+	if (ev != NULL)
+		run_script(ev->nd->u.scr.script, ev->pos, sd->bl.id, ev->nd->bl.id);
 }
