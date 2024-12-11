@@ -39,6 +39,29 @@ using namespace rathena;
 struct Battle_Config battle_config;
 static struct eri *delay_damage_ers; //For battle delay damage structures.
 
+int battle_get_autospell(struct block_list* src, uint16 skill_id) {
+	map_session_data *sd = BL_CAST(BL_PC, src);
+	
+	if (sd && sd->state.autocast == 1)
+		return 1;
+
+	switch (skill_id) {
+		case 0:
+		case MO_TRIPLEATTACK:
+			return 2;
+			break;
+		case AB_DUPLELIGHT_MELEE:
+		case AB_DUPLELIGHT_MAGIC:
+			return 1;
+			break;
+		default:
+			return 0;
+			break;
+	}
+
+	return 0;
+}
+
 // Early declaration
 int battle_get_weapon_element(struct Damage *wd, struct block_list *src, struct block_list *target, uint16 skill_id, uint16 skill_lv, short weapon_position, bool calc_for_damage_only);
 int battle_get_magic_element(struct block_list* src, struct block_list* target, uint16 skill_id, uint16 skill_lv, int mflag);
@@ -7557,6 +7580,19 @@ static struct Damage battle_calc_weapon_attack(struct block_list *src, struct bl
 			ATK_ADDRATE(wd.damage, wd.damage2, -i);
 			RE_ALLATK_ADDRATE(&wd, -i);
 		}
+
+		if( sd && (i = sd->bonus.normalatk_rate)) {
+			if (battle_get_autospell(src, skill_id) == 2) {
+				ATK_ADDRATE(wd.damage, wd.damage2, i);
+				RE_ALLATK_ADDRATE(&wd, i);
+			} else if (battle_get_autospell(src, skill_id) == 1) {
+				ATK_ADDRATE(wd.damage, wd.damage2, i/2);
+				RE_ALLATK_ADDRATE(&wd, i/2);
+			} else {
+				ATK_ADDRATE(wd.damage, wd.damage2, -(min(99,i/2)));
+				RE_ALLATK_ADDRATE(&wd, -(min(99,i/2)));
+			}
+		}
 #endif
 	}
 
@@ -8764,6 +8800,13 @@ struct Damage battle_calc_magic_attack(struct block_list *src,struct block_list 
 				sd->bonus.ignore_mdef_class & ( 1 << tstatus->class_ ) || sd->bonus.ignore_mdef_class & ( 1 << CLASS_ALL )
 			))
 				flag.imdef = 1;
+			
+			if (i = sd->bonus.normalatk_rate) {
+				if (battle_get_autospell(src, skill_id) == 1)
+					ad.damage += (int64)ad.damage * i / 200;
+				else
+					ad.damage -= (int64)ad.damage * min(99, i / 2) / 100;
+			}
 		}
 
 		if (tsd && (i = pc_sub_skillatk_bonus(tsd, skill_id)))
@@ -9307,6 +9350,13 @@ struct Damage battle_calc_misc_attack(struct block_list *src,struct block_list *
 
 	if (tsd && (i = pc_sub_skillatk_bonus(tsd, skill_id)))
 		md.damage -= (int64)md.damage*i/100;
+	
+	if (sd && (i = sd->bonus.normalatk_rate)) {
+		if (battle_get_autospell(src, skill_id) == 1)
+			md.damage += (int64)md.damage * i / 200;
+		else
+			md.damage -= (int64)md.damage * min(99, i / 2) / 100;
+	}
 
 	if(!nk[NK_IGNOREELEMENT])
 		md.damage=battle_attr_fix(src, target, md.damage, s_ele, tstatus->def_ele, tstatus->ele_lv);

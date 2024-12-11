@@ -4386,6 +4386,11 @@ void pc_bonus(map_session_data *sd,int type,int val)
 			if(sd->state.lr_flag != 2)
 				sd->bonus.itemsphealrate2 += val;
 			break;
+		case SP_NORMAL_ATK: //bonus bNormalAtk,val;
+			if (sd->state.lr_flag == 2)
+				break;
+			sd->bonus.normalatk_rate += val;
+			break;
 		default:
 			if (current_equip_combo_pos > 0) {
 				ShowWarning("pc_bonus: unknown bonus type %d %d in a combo with item #%u\n", type, val, sd->inventory_data[pc_checkequip( sd, current_equip_combo_pos )]->nameid);
